@@ -1,8 +1,9 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { TOURNAMENT } from "@/config";
 import { useLang } from "@/i18n/LanguageContext";
 import { format } from "@/i18n/strings";
 import { tierFor } from "@/lib/score";
+import { usePrefersReducedMotion } from "@/lib/usePrefersReducedMotion";
 import { Shell } from "./Shell";
 
 interface Props {
