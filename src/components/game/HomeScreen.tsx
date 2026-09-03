@@ -1,10 +1,10 @@
-import { QUESTIONS_PER_GAME, QUESTION_DURATION_MS, TOURNAMENT } from "@/config";
+import { QUESTION_DURATION_MS, TOURNAMENT } from "@/config";
 import { useLang } from "@/i18n/LanguageContext";
 import { format } from "@/i18n/strings";
 import { Shell } from "./Shell";
 
 export function HomeScreen({ onStart }: { onStart: () => void }) {
-  const { t, lang } = useLang();
+  const { t } = useLang();
   const seconds = Math.round(QUESTION_DURATION_MS / 1000);
 
   return (
@@ -23,28 +23,10 @@ export function HomeScreen({ onStart }: { onStart: () => void }) {
           {format(t.rules, { s: seconds })}
         </p>
 
-        <div className="animate-rise mt-8 grid grid-cols-3 gap-2">
-          {[
-            { k: QUESTIONS_PER_GAME, v: "Questions" },
-            { k: `${seconds}s`, v: lang === "fr" ? "Chrono" : "Timer" },
-            { k: TOURNAMENT.category, v: lang === "fr" ? "Genève" : "Geneva" },
-          ].map((stat) => (
-            <div
-              key={stat.v}
-              className="glass-panel rounded-xl px-3 py-3 text-center"
-            >
-              <p className="font-display text-2xl font-extrabold tabular-nums text-primary">
-                {stat.k}
-              </p>
-              <p className="label-caps mt-1 text-muted-foreground">{stat.v}</p>
-            </div>
-          ))}
-        </div>
-
         <button
           type="button"
           onClick={onStart}
-          className="group animate-pop mt-8 flex min-h-14 w-full items-center justify-between gap-4 rounded-full bg-primary px-6 text-primary-foreground shadow-ace transition-transform duration-[var(--dur-fast)] hover:scale-[1.01] active:scale-[0.99]"
+          className="group animate-pop mt-10 flex min-h-14 w-full items-center justify-between gap-4 rounded-full bg-primary px-6 text-primary-foreground shadow-ace transition-transform duration-[var(--dur-fast)] hover:scale-[1.01] active:scale-[0.99]"
         >
           <span className="font-display text-lg font-extrabold uppercase tracking-wide">
             {t.play}
