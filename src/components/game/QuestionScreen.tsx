@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { FEEDBACK_DURATION_MS, QUESTION_DURATION_MS } from "@/config";
 import { useCountdown } from "@/game/useCountdown";
 import { useLang } from "@/i18n/LanguageContext";
@@ -46,6 +46,7 @@ export function QuestionScreen({
   const answering = phase === "playing";
   const totalSeconds = Math.round(QUESTION_DURATION_MS / 1000);
   const isCorrect = selected !== null && selected === question.correctIndex;
+  const [urgent, setUrgent] = useState(false);
 
   const handleTick = useCallback(
     (remaining: number) => {
@@ -54,11 +55,13 @@ export function QuestionScreen({
         : remaining;
       const fill = fillRef.current;
       if (fill) fill.style.transform = `scaleX(${value})`;
+      const secondsLeft = Math.ceil(remaining * totalSeconds);
       const label = secondsRef.current;
       if (label) {
-        const seconds = String(Math.ceil(remaining * totalSeconds));
+        const seconds = String(secondsLeft);
         if (label.textContent !== seconds) label.textContent = seconds;
       }
+      setUrgent(secondsLeft <= 3 && secondsLeft > 0);
     },
     [reducedMotion, totalSeconds],
   );
@@ -80,7 +83,12 @@ export function QuestionScreen({
 
   useEffect(() => {
     headingRef.current?.focus();
+    setUrgent(false);
   }, [index]);
+
+  useEffect(() => {
+    if (!answering) setUrgent(false);
+  }, [answering]);
 
   const stateFor = (i: number): AnswerState => {
     if (answering) return "idle";
@@ -94,6 +102,15 @@ export function QuestionScreen({
 
   return (
     <div className="court-clay relative flex min-h-dvh flex-col overflow-hidden">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 bg-cover bg-center opacity-25 mix-blend-luminosity"
+        style={{ backgroundImage: "url(/images/menu-bg.webp)" }}
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 bg-gradient-to-b from-background/70 via-transparent to-background/80"
+      />
       <div aria-hidden className="court-lines pointer-events-none absolute inset-0 opacity-40" />
 
       {/* Scoreboard */}
@@ -114,13 +131,14 @@ export function QuestionScreen({
             secondsRef={secondsRef}
             label={t.timerLabel}
             totalSeconds={totalSeconds}
+            urgent={urgent && answering}
           />
         </div>
       </header>
 
       <main
         id="content"
-        className="relative z-10 mx-auto flex w-full max-w-xl flex-1 flex-col justify-center px-4 py-6"
+        className="relative z-10 mx-auto flex w-full max-w-2xl flex-1 flex-col justify-center px-4 py-6"
       >
         <p className="label-caps text-primary">
           {format(t.progress, { n: index + 1, total })}
@@ -129,12 +147,12 @@ export function QuestionScreen({
         <h1
           ref={headingRef}
           tabIndex={-1}
-          className="animate-rise mt-3 text-[clamp(1.4rem,5.5vw,2rem)] leading-[1.15] font-extrabold text-balance outline-none"
+          className="animate-rise mt-3 text-[clamp(1.65rem,6vw,2.6rem)] leading-[1.12] font-extrabold text-balance outline-none"
         >
           {question.prompt}
         </h1>
 
-        <div className="mt-6 flex flex-col gap-2.5">
+        <div className="mt-7 flex flex-col gap-3">
           {question.options.map((option, i) => (
             <AnswerButton
               key={`${question.id}-${i}`}
