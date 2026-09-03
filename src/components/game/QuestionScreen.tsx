@@ -37,7 +37,7 @@ export function QuestionScreen({
   onAnswer,
   onNext,
 }: Props) {
-  const { t } = useLang();
+  const { t, lang } = useLang();
   const reducedMotion = usePrefersReducedMotion();
   const fillRef = useRef<HTMLDivElement | null>(null);
   const secondsRef = useRef<HTMLSpanElement | null>(null);
@@ -167,7 +167,7 @@ export function QuestionScreen({
               </p>
               {!isCorrect && (
                 <p className="mt-1.5 text-[15px] font-bold">
-                  {t.correctAnswerWas} : {correctText}
+                  {t.correctAnswerWas}{lang === "fr" ? " : " : ": "}{correctText}
                 </p>
               )}
               <p className="mt-1.5 text-[14px] leading-snug text-muted-foreground">
