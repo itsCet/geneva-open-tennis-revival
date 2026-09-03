@@ -1,8 +1,9 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { TOURNAMENT } from "@/config";
 import { useLang } from "@/i18n/LanguageContext";
 import { format } from "@/i18n/strings";
 import { tierFor } from "@/lib/score";
+import { usePrefersReducedMotion } from "@/lib/usePrefersReducedMotion";
 import { Shell } from "./Shell";
 
 interface Props {
@@ -17,6 +18,27 @@ export function ScoreScreen({ score, total, onReplay, onMenu }: Props) {
   const [shareNote, setShareNote] = useState<string | null>(null);
   const tier = t.tiers[tierFor(score, total)];
   const ratio = total > 0 ? score / total : 0;
+  const reducedMotion = usePrefersReducedMotion();
+  const [displayed, setDisplayed] = useState(reducedMotion ? score : 0);
+
+  // Compteur animé : le score monte comme au tableau d'affichage.
+  useEffect(() => {
+    if (reducedMotion || score <= 0) {
+      setDisplayed(score);
+      return;
+    }
+    const duration = 700 + score * 90;
+    let raf = 0;
+    const start = performance.now();
+    const step = (now: number) => {
+      const p = Math.min(1, (now - start) / duration);
+      const eased = 1 - Math.pow(1 - p, 3);
+      setDisplayed(Math.round(eased * score));
+      if (p < 1) raf = requestAnimationFrame(step);
+    };
+    raf = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(raf);
+  }, [score, reducedMotion]);
 
   const handleShare = useCallback(async () => {
     const text = `${TOURNAMENT.name} — Quiz Game : ${score}/${total} · ${tier.label}. ${t.shareCta} → ${TOURNAMENT.url}`;
@@ -42,8 +64,11 @@ export function ScoreScreen({ score, total, onReplay, onMenu }: Props) {
         <section className="glass-panel animate-pop rounded-3xl px-6 py-8 text-center shadow-court">
           <p className="label-caps text-muted-foreground">{t.yourScore}</p>
 
-          <p className="font-display mt-2 text-[clamp(4rem,22vw,7rem)] leading-none font-extrabold tabular-nums text-primary">
-            {score}
+          <p
+            aria-hidden
+            className="font-display mt-2 text-[clamp(4rem,22vw,7rem)] leading-none font-extrabold tabular-nums text-primary"
+          >
+            {displayed}
             <span className="text-foreground/25">/{total}</span>
           </p>
 

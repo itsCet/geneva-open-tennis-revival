@@ -48,15 +48,15 @@ export function AnswerButton({
       disabled={disabled}
       aria-label={ariaLabel}
       style={{ animationDelay: `${index * 45}ms` }}
-      className={`group animate-rise flex min-h-[var(--tap,56px)] w-full items-center gap-3 rounded-xl border px-3 py-3 text-left backdrop-blur-sm transition-all duration-[var(--dur-fast)] disabled:cursor-default ${shell}`}
+      className={`group animate-rise flex min-h-16 w-full items-center gap-3.5 rounded-xl border px-4 py-3.5 text-left backdrop-blur-sm transition-all duration-[var(--dur-fast)] disabled:cursor-default ${shell}`}
     >
       <span
-        className={`font-display grid size-9 shrink-0 place-items-center rounded-lg text-sm font-bold transition-colors duration-[var(--dur-fast)] ${chip}`}
+        className={`font-display grid size-10 shrink-0 place-items-center rounded-lg text-base font-bold transition-colors duration-[var(--dur-fast)] ${chip}`}
         aria-hidden
       >
         {state === "correct" ? "✓" : state === "wrong" ? "✕" : letter}
       </span>
-      <span className="text-[15px] leading-snug font-medium text-balance">{text}</span>
+      <span className="text-base leading-snug font-medium text-balance">{text}</span>
     </button>
   );
 }
