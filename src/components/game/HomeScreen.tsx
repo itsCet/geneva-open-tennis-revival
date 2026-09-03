@@ -4,7 +4,7 @@ import { format } from "@/i18n/strings";
 import { Shell } from "./Shell";
 
 export function HomeScreen({ onStart }: { onStart: () => void }) {
-  const { t } = useLang();
+  const { t, lang } = useLang();
   const seconds = Math.round(QUESTION_DURATION_MS / 1000);
 
   return (
@@ -26,8 +26,8 @@ export function HomeScreen({ onStart }: { onStart: () => void }) {
         <div className="animate-rise mt-8 grid grid-cols-3 gap-2">
           {[
             { k: QUESTIONS_PER_GAME, v: "Questions" },
-            { k: `${seconds}s`, v: "Chrono" },
-            { k: TOURNAMENT.category, v: TOURNAMENT.city },
+            { k: `${seconds}s`, v: lang === "fr" ? "Chrono" : "Timer" },
+            { k: TOURNAMENT.category, v: lang === "fr" ? "Genève" : "Geneva" },
           ].map((stat) => (
             <div
               key={stat.v}
