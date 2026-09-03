@@ -5,10 +5,12 @@ interface Props {
   secondsRef: RefObject<HTMLSpanElement | null>;
   label: string;
   totalSeconds: number;
+  /** Vrai dans les dernières secondes : le chrono s'affole façon tie-break. */
+  urgent?: boolean;
 }
 
 /** Chrono : bande de service qui se referme, plus le compte en clair. */
-export function TimerBar({ fillRef, secondsRef, label, totalSeconds }: Props) {
+export function TimerBar({ fillRef, secondsRef, label, totalSeconds, urgent = false }: Props) {
   return (
     <div className="flex items-center gap-3">
       <div
@@ -18,7 +20,9 @@ export function TimerBar({ fillRef, secondsRef, label, totalSeconds }: Props) {
       >
         <div
           ref={fillRef}
-          className="h-full origin-left rounded-full bg-gradient-to-r from-destructive to-primary"
+          className={`h-full origin-left rounded-full bg-gradient-to-r from-destructive to-primary ${
+            urgent ? "animate-urgency" : ""
+          }`}
           style={{ transform: "scaleX(1)" }}
         />
         <div
@@ -26,7 +30,11 @@ export function TimerBar({ fillRef, secondsRef, label, totalSeconds }: Props) {
           className="animate-sweep pointer-events-none absolute inset-y-0 left-0 w-1/4 bg-gradient-to-r from-transparent via-chalk/25 to-transparent"
         />
       </div>
-      <span className="font-display w-8 text-right text-lg font-bold tabular-nums text-foreground">
+      <span
+        className={`font-display w-8 text-right text-lg font-bold tabular-nums transition-colors duration-[var(--dur-fast)] ${
+          urgent ? "animate-urgency text-primary" : "text-foreground"
+        }`}
+      >
         <span ref={secondsRef}>{totalSeconds}</span>
       </span>
     </div>
